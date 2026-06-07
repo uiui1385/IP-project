@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خبیث سایبری | IP Tracker</title>
+    <style>
+        /* تنظیمات کلی و پس‌زمینه سایبری */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #00ff41; /* سبز ماتریکس */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* افکت پس‌زمینه متحرک (Grid/Matrix style) */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* کانتینر اصلی */
+        .terminal-container {
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            padding: 40px;
+            border-radius: 5px;
+            width: 450px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff41;
+            letter-spacing: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #008f11;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* ورودی و دکمه */
+        input {
+            width: 80%;
+            background: #000;
+            border: 1px solid #00ff41;
+            padding: 12px;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input:focus {
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 20px #00ff41;
+        }
+
+        /* نمایش نتیجه */
+        #result {
+            margin-top: 30px;
+            min-height: 50px;
+            font-size: 1.2rem;
+            word-break: break-all;
+        }
+
+        .glitch {
+            animation: glitch 1s linear infinite;
+        }
+
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px, 0) skew(0deg); }
+            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+            62% { transform: translate(0, 0) skew(5deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="terminal-container">
+        <h1 class="glitch">خبیث سایبری</h1>
+        <div class="subtitle">System.Access.Target_IP_Finder</div>
+
+        <input type="text" id="domainInput" placeholder="target_domain.com">
+        <br>
+        <button onclick="fetchIP()">Execute Scan</button>
+
+        <div id="result">
+            <span style="color: #004400;">[READY TO SCAN...]</span>
+        </div>
+    </div>
+
+    <script>
+        async function fetchIP() {
+            const domain = document.getElementById('domainInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!domain) {
+                resultDiv.innerHTML = '<span style="color: red;">[ERROR: NO TARGET DETECTED]</span>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<span style="color: #ffff00;">[SCANNING... PLEASE WAIT]</span>';
+
+            try {
+                // استفاده از API گوگل برای دریافت اطلاعات DNS
+                const response = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
+                const data = await response.json();
+
+                if (data.Answer && data.Answer.length > 0) {
+                    const ip = data.Answer[0].data;
+                    resultDiv.innerHTML = `
+                        <div style="border-top: 1px solid #004400; padding-top: 10px;">
+                            <span style="color: #008f11;">TARGET_IP:</span><br>
+                            <span style="color: #fff; text-shadow: 0 0 5px #fff;">${ip}</span>
+                        </div>`;
+                } else {
+                    resultDiv.innerHTML = '<span style="color: red;">[FAILED: TARGET NOT FOUND]</span>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<span style="color: red;">[CRITICAL ERROR: CONNECTION LOST]</span>';
+            }
+        }
+    </script>
+</body>
+</html>
